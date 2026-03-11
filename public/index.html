@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo List API - Démo</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f5f5; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; background: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); padding: 30px; }
+        h1 { color: #333; margin-bottom: 20px; text-align: center; }
+        h2 { color: #555; margin: 20px 0 10px; font-size: 1.3rem; }
+        
+        .form-group { display: flex; gap: 10px; margin-bottom: 20px; }
+        input[type="text"] { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px; }
+        button { padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }
+        button:hover { background: #0056b3; }
+        .delete-btn { background: #dc3545; padding: 5px 10px; font-size: 14px; }
+        .delete-btn:hover { background: #c82333; }
+        .toggle-btn { background: #28a745; padding: 5px 10px; font-size: 14px; margin-right: 5px; }
+        .toggle-btn:hover { background: #218838; }
+        
+        .todo-item { display: flex; align-items: center; justify-content: space-between; padding: 10px; border-bottom: 1px solid #eee; }
+        .todo-item:last-child { border-bottom: none; }
+        .todo-content { display: flex; align-items: center; gap: 10px; }
+        .todo-title { font-size: 16px; }
+        .todo-title.completed { text-decoration: line-through; color: #888; }
+        .todo-actions { display: flex; gap: 5px; }
+        
+        .stats { display: flex; gap: 20px; margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 5px; }
+        .stat-item { flex: 1; text-align: center; }
+        .stat-value { font-size: 24px; font-weight: bold; color: #007bff; }
+        .stat-label { font-size: 14px; color: #666; }
+        
+        .api-info { margin-top: 30px; padding: 15px; background: #f8f9fa; border-radius: 5px; font-family: monospace; font-size: 14px; }
+        .api-info pre { margin: 10px 0 0; padding: 10px; background: #e9ecef; border-radius: 5px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📋 Todo List API - Démo</h1>
+        
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-value" id="total-count">0</div>
+                <div class="stat-label">Total tâches</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="completed-count">0</div>
+                <div class="stat-label">Terminées</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="pending-count">0</div>
+                <div class="stat-label">En cours...</div>
+            </div>
+        </div>
+
+        <h2>Ajouter une nouvelle tâche</h2>
+        <div class="form-group">
+            <input type="text" id="new-todo" placeholder="Entrez le titre de la tâche...">
+            <button onclick="addTodo()">Ajouter</button>
+        </div>
+
+        <h2>Liste des tâches</h2>
+        <div id="todo-list"></div>
+
+        <div class="api-info">
+            <strong>📡 API Endpoints disponibles :</strong>
+            <pre>
+GET    /api/todos           → Liste toutes les tâches
+GET    /api/todos/:id       → Récupère une tâche
+POST   /api/todos           → Crée une nouvelle tâche
+PUT    /api/todos/:id       → Met à jour une tâche
+DELETE /api/todos/:id       → Supprime une tâche
+            </pre>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api/todos';
+
+        // Charger les tâches au démarrage
+        document.addEventListener('DOMContentLoaded', loadTodos);
+
+        async function loadTodos() {
+            try {
+                const response = await fetch(API_URL);
+                const data = await response.json();
+                displayTodos(data.data);
+                updateStats(data.data);
+            } catch (error) {
+                console.error('Erreur:', error);
+            }
+        }
+
+        function displayTodos(todos) {
+            const list = document.getElementById('todo-list');
+            list.innerHTML = '';
+            
+            todos.forEach(todo => {
+                const item = document.createElement('div');
+                item.className = 'todo-item';
+                item.innerHTML = `
+                    <div class="todo-content">
+                        <span class="todo-title ${todo.completed ? 'completed' : ''}">${todo.title}</span>
+                    </div>
+                    <div class="todo-actions">
+                        <button class="toggle-btn" onclick="toggleTodo(${todo.id})">
+                            ${todo.completed ? '✓ Fait' : '◯ À faire'}
+                        </button>
+                        <button class="delete-btn" onclick="deleteTodo(${todo.id})">🗑 Supprimer</button>
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        function updateStats(todos) {
+            const total = todos.length;
+            const completed = todos.filter(t => t.completed).length;
+            const pending = total - completed;
+            
+            document.getElementById('total-count').textContent = total;
+            document.getElementById('completed-count').textContent = completed;
+            document.getElementById('pending-count').textContent = pending;
+        }
+
+        async function addTodo() {
+            const input = document.getElementById('new-todo');
+            const title = input.value.trim();
+            
+            if (!title) {
+                alert('Veuillez entrer un titre');
+                return;
+            }
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title })
+                });
+                
+                if (response.ok) {
+                    input.value = '';
+                    loadTodos();
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('Erreur lors de l\'ajout');
+            }
+        }
+
+        async function toggleTodo(id) {
+            try {
+                // D'abord récupérer la tâche pour connaître son état actuel
+                const getResponse = await fetch(`${API_URL}/${id}`);
+                const todo = (await getResponse.json()).data;
+                
+                // Puis mettre à jour
+                const response = await fetch(`${API_URL}/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ completed: !todo.completed })
+                });
+                
+                if (response.ok) {
+                    loadTodos();
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+            }
+        }
+
+        async function deleteTodo(id) {
+            if (!confirm('Supprimer cette tâche ?')) return;
+            
+            try {
+                const response = await fetch(`${API_URL}/${id}`, {
+                    method: 'DELETE'
+                });
+                
+                if (response.ok) {
+                    loadTodos();
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+            }
+        }
+    </script>
+</body>
+</html>

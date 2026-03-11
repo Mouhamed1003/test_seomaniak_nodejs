@@ -10,6 +10,7 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(cors()); // Permet les requêtes cross-origin
 app.use(express.json()); // Permet de parser le JSON dans le body des requêtes
+app.use(express.static('public')); // Servir les fichiers statiques (pour le front)
 
 // Importer les routes
 const todoRoutes = require('./routes/todoRoutes');
