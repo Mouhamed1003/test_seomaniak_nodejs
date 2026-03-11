@@ -1,8 +1,8 @@
 // On simule une base de données avec un tableau en mémoire
 let todos = [
-    { id: 1, title: 'Apprendre Node.js', completed: false },
-    { id: 2, title: 'Créer une API REST', completed: false },
-    { id: 3, title: 'Préparer la démo vidéo', completed: true }
+    { id: 1, title: 'Test SEOMANIACK en 72h', completed: true },
+    { id: 2, title: "Création d'une API RESTfull avec Node.js/express.JS", completed: false },
+    { id: 3, title: 'DIOUF Le Codeur Pro', completed: false }
 ];
 
 // Fonction pour générer un nouvel ID

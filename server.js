@@ -7,7 +7,7 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware
+// Middleware (conditions de sécurité)
 app.use(cors()); // Permet les requêtes cross-origin
 app.use(express.json()); // Permet de parser le JSON dans le body des requêtes
 app.use(express.static('public')); // Servir les fichiers statiques (pour le front)
