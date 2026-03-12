@@ -18,10 +18,14 @@ const todoRoutes = require('./routes/todoRoutes');
 // Utiliser les routes
 app.use('/api/todos', todoRoutes);
 
-// Route de base pour tester que le serveur tourne
 app.get('/', (req, res) => {
-    res.send('API Todo List fonctionne !');
+    res.sendFile(__dirname + '/public/index.html');
 });
+
+// Route de base pour tester que le serveur tourne
+// app.get('/', (req, res) => {
+//     res.send('API Todo List fonctionne !');
+// });
 
 // Démarrer le serveur
 app.listen(PORT, () => {
