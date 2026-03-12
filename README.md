@@ -46,14 +46,16 @@ DELETE /todos/:id
 
 1. Cloner le projet
 
-git clone https://github.com/tonusername/test-seomaniak.git
+git clone https://github.com/Mouhamed1003/test_seomaniak_nodejs
 
 2. Installer les dépendances
 
 npm install
 
 3. Lancer le serveur
-
+npm start
+nodemon server.js
+node server.js
 npm run dev
 
 Le serveur démarre sur :
