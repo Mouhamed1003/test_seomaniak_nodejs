@@ -10,6 +10,23 @@ Une API RESTful simple de gestion de tâches (Todo List) construite avec Node.js
 - **Dotenv** - Gestion des variables d'environnement
 - **Postman** - Teste des requetes (CRUD) du back-end.
 
+## Routes de l'API
+
+GET /todos  
+→ récupérer toutes les tâches
+
+GET /todos/:id  
+→ récupérer une tâche par ID
+
+POST /todos  
+→ créer une nouvelle tâche
+
+PUT /todos/:id  
+→ modifier une tâche
+
+DELETE /todos/:id  
+→ supprimer une tâche
+
 ## 📁 Structure du projet
 ├── controllers/
 │ └── todoController.js # Logique métier des routes
@@ -23,3 +40,22 @@ Une API RESTful simple de gestion de tâches (Todo List) construite avec Node.js
 ├── .env # Variables d'environnement
 ├── .gitignore # Fichiers ignorés par Git
 └── README.md # Documentation
+└── README.txt # details
+
+## Installation
+
+1. Cloner le projet
+
+git clone https://github.com/tonusername/test-seomaniak.git
+
+2. Installer les dépendances
+
+npm install
+
+3. Lancer le serveur
+
+npm run dev
+
+Le serveur démarre sur :
+
+http://localhost:5000
